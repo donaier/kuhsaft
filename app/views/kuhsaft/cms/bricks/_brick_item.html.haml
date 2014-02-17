@@ -2,7 +2,7 @@
   = simple_form_for brick, :as => :brick, :url => kuhsaft.cms_brick_path(brick), :remote => !brick.uploader?, :html => { :id => nil }, :wrapper => :bootstrap do |form|
     = form.hidden_field :position, :class => 'position-field'
     - brick_content = render(brick.to_edit_partial_path, :brick => brick, :form => form)
-    .brick-item-header.clearfix
+    .brick-item-header.clearfix{ :class => brick.invalid? ? 'invalid' : '' }
       .pull-left
         - if brick_content.present?
           .resize-toggler.btn.btn-small{ 'data-toggle' => 'collapse', 'data-target' => "#brick-content-#{brick.id}" }
@@ -12,6 +12,7 @@
           = brick.caption
         %span.muted
           = brick.backend_label(:parenthesis => true)
+        = "Errors: #{brick.errors.full_messages.join(' , ')}" if brick.errors.any?
       .pull-right
         .btn-toolbar
           - # delete button
