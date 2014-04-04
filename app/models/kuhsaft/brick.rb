@@ -1,11 +1,13 @@
+require_relative '../../../lib/kuhsaft/brick_list'
+
 module Kuhsaft
   class Brick < ActiveRecord::Base
     include Kuhsaft::BrickList
 
-    belongs_to :brick_list, :polymorphic => true, :touch => true
+    belongs_to :brick_list, polymorphic: true, touch: true
 
-    scope :localized, -> { where(:locale => I18n.locale) }
-    default_scope -> { order('position ASC').localized }
+    scope :localized, -> { where(locale: I18n.locale) }
+    default_scope { order('position ASC').localized }
 
     serialize :display_styles, Array
 
@@ -16,7 +18,7 @@ module Kuhsaft
               :type,
               :brick_list_id,
               :brick_list_type,
-              :presence => true
+              presence: true
 
     validates :template_name,
               :type,
@@ -49,15 +51,13 @@ module Kuhsaft
     end
 
     def to_edit_partial_path
-      path = self.to_partial_path.split '/'
+      path = to_partial_path.split '/'
       path << 'edit'
       path.join '/'
     end
 
     def has_siblings?
-      if brick_list
-        brick_list.bricks.any?
-      end
+      brick_list.present? && brick_list.bricks.any?
     end
 
     #
@@ -66,7 +66,7 @@ module Kuhsaft
     # Returns the path to this partial.
     #
     def to_edit_childs_partial_path
-      path = self.to_partial_path.split '/'
+      path = to_partial_path.split '/'
       path << 'childs'
       path.join '/'
     end
@@ -84,12 +84,12 @@ module Kuhsaft
 
     def set_position
       self.position = if self.position.present?
-        self.position
-      elsif self.respond_to?(:brick_list) && self.brick_list.respond_to?(:bricks)
-        brick_list.bricks.maximum(:position).to_i + 1
-      else
-        1
-      end
+                        self.position
+                      elsif self.respond_to?(:brick_list) && brick_list.respond_to?(:bricks)
+                        brick_list.bricks.maximum(:position).to_i + 1
+                      else
+                        1
+                      end
     end
 
     def brick_list_type
@@ -98,7 +98,7 @@ module Kuhsaft
 
     # Returns a css classname suitable for use in the frontend
     def to_style_class
-      ([self.class.to_s.underscore.dasherize.gsub('/', '-')] + self.display_styles).join(' ')
+      ([self.class.to_s.underscore.dasherize.gsub('/', '-')] + display_styles).join(' ')
     end
 
     # Returns a unique DOM id suitable for use in the frontend
@@ -111,6 +111,12 @@ module Kuhsaft
       []
     end
 
+    def translated_available_display_styles
+      available_display_styles.map do |style|
+        [I18n.t("#{self.class.to_s.demodulize.underscore}.display_styles.#{style}"), style]
+      end
+    end
+
     def backend_label(options = {})
       label = self.class.model_name.human
       if options[:parenthesis] == true
@@ -118,6 +124,14 @@ module Kuhsaft
       else
         label
       end
+    end
+
+    def partial_digest(name)
+      ActionView::Digestor.digest(name, 'haml',  ApplicationController.new.lookup_context, partial: true)
+    end
+
+    def cache_key
+      super +  partial_digest(to_partial_path)
     end
   end
 end

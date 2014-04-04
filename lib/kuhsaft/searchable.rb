@@ -6,8 +6,8 @@ module Kuhsaft
     extend ActiveSupport::Concern
 
     DICTIONARIES = {
-      :en => 'english',
-      :de => 'german',
+      en: 'english',
+      de: 'german'
     }
 
     def update_fulltext
@@ -19,25 +19,22 @@ module Kuhsaft
         raise 'Kuhsaft::Searchable needs Kuhsaft::BrickList to be included'
       end
 
-      if included_modules.include?(Translatable)
-        translate :fulltext
-      end
-
+      translate :fulltext if included_modules.include?(Translatable)
       before_validation :update_fulltext
 
       if ActiveRecord::Base.connection.instance_values['config'][:adapter] == 'postgresql'
         include ::PgSearch
         cb = lambda do |query|
           {
-            :against => {
+            against: {
               locale_attr(:title)       => 'A',
               locale_attr(:page_title)  => 'A',
               locale_attr(:keywords)    => 'B',
               locale_attr(:description) => 'C',
-              locale_attr(:fulltext)    => 'C',
+              locale_attr(:fulltext)    => 'C'
             },
-            :query => query,
-            :using => { :tsearch => { :dictionary => DICTIONARIES[I18n.locale] || 'simple' }}
+            query: query,
+            using: { tsearch: { dictionary: DICTIONARIES[I18n.locale] || 'simple' } }
           }
         end
         pg_search_scope :search_without_excerpt, cb
@@ -57,7 +54,7 @@ module Kuhsaft
           if query.is_a? Hash
             where("#{query.first[0]} LIKE ?", "%#{query.first[1]}%")
           else
-            stmt = ""
+            stmt = ''
             stmt += "#{locale_attr(:keywords)} LIKE ? OR "
             stmt += "#{locale_attr(:title)} LIKE ? OR "
             stmt += "#{locale_attr(:page_title)} LIKE ? OR "

@@ -9,6 +9,8 @@
 #= require jquery.remotipart
 #= require jquery.ui.all
 #= require bootstrap
+#= require bootstrap-modal-v2
+#= require bootstrap-modalmanager
 #= require ckeditor-jquery
 #= require jquery.nestable
 #= require_tree .
@@ -91,6 +93,11 @@ window.toggleCollapseBricksNav = (bool = false) ->
   else
     $('#collapse-bricks-nav').addClass('hidden')
 
+# Stop propagation for display styles dropdown
+window.stopPropagationOfDisplayStyles = (selector) ->
+  selector.click (e) ->
+    e.stopPropagation()
+
 $(document).ajaxSuccess ->
   sortableBrick()
 
@@ -99,6 +106,7 @@ $(document).ready ->
   checkPageType()
   sortableBrick()
   initSubmitLinks()
+  stopPropagationOfDisplayStyles($('#display-styles ul'))
 
   $('#page_page_type').change ->
     checkPageType()

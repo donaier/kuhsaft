@@ -1,3 +1,5 @@
+require_relative './brick'
+
 module Kuhsaft
   class PlaceholderBrick < Brick
     PARTIAL_PATH = '/app/views/kuhsaft/placeholder_bricks/partials/_*.haml'
@@ -8,6 +10,14 @@ module Kuhsaft
 
     def user_can_add_childs?
       false
+    end
+
+    def partial_name
+      "kuhsaft/placeholder_bricks/partials/#{template_name}"
+    end
+
+    def cache_key
+      super + partial_digest(partial_name)
     end
   end
 end

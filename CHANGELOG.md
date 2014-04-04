@@ -1,32 +1,50 @@
 # CHANGELOG
 
-## features/backend_brick_view - issue #199
+## 2.3.2 - 2014-04-02
 
-- Collapsable backend brick view
-- Although the length of string fields are validated, do not validate file strings like the image attribute in the image brick
-- Add remotipart gem to handle remote: :true forms with file uploads
-- Only show collapse/expand toggle if bricks exist
-- Add image_cache field to handle the cached image in ImageBrick
-- Add asset_cache field to handle the cached asset in AssetBrick
+* fixed/refactored new brick modals to fit smaller screens/bigger forms
 
-## features/dummy_seeds
+## 2.3.1 - 2014-04-01
 
-- Add `bundle exec rake db:seed` to setup rake task. It is easier for developing
+* New Module added that simplifies invalidating cached placeholder bricks when a non-kuhsaft model changes. Consult the readme for instructions!
 
-## features/3045 iframe in ckeditor
+## 2.3.0 - 2014-03-26
 
-- allow iframes to be saved in ckeditor
+### HOWTO Upgrade
 
-  *If you already have a customized ck-config just add ``config.extraAllowedContent = 'iframe[*]'`` to your ck-config.js.coffee when updating*
+* `bundle update kuhsaft`
+* `rake kuhsaft:install:migrations`
+* `rake db:migrate`
+* recreate versions for all bricks with uploaders:
 
-## features/2988_ck_js_config
+  ```ruby
+    Kuhsaft::ImageBrick.all.each { |b| b.image.recreate_versions! }
+    Kuhsaft::AssetBrick.all.each { |b| b.asset.recreate_versions! }
+    Kuhsaft::Asset.all.each { |b| b.file.recreate_versions! }
+  ```
 
+* update your `config.assets.precompile` array with `ckeditor/adv_link/*` if you would
+  like to use the new CK extension for internal links
+
+* If you already have a customized ck-config just add ``config.extraAllowedContent = 'iframe[*]'`` to your ck-config.js.coffee
+  if you would like to allow iframes in bricks with ck-editor
+
+### Notable Changes
+
+- It is now possible to link via dialogue to other CMS Pages within current locale
+- Collapsable brick view
+- Caching optimizations for pages and bricks
+- Cleaned up brick validations: Save only valid Bricks and cleaned up brick forms
+- Default value of page type field is now set to content
 - add rake task which renames precompiled assets from ck-editor config to make
   sure that the newest config file is load in backend on staging and production
-
-## features/2985_warning_on_too_long_string
-
-- add string length validation cause of postgres string limit
+- add string length validation to prevent exceptions due to postgres string limit
+- make migration for additional content languages be generated dynamic
+- Translatable display styles
+- Update display style dropdown
+- add getter and setter for country specific translated pages
+- Added `bundle exec rake db:seed` to setup rake task for easier development.
+- allow iframes to be saved in ckeditor
 
 ## 2.2.6 - 2013-12-02
 

@@ -66,12 +66,7 @@ form
     border: 2px solid #f66
 
   .btn
-    opacity: 0
-    @include transition(opacity, 0.2s)
-
     &.resize-toggler
-      opacity: 1
-
       .icon-resize-small
         display: block
       .icon-resize-full
@@ -82,10 +77,6 @@ form
           display: none
         .icon-resize-full
           display: block
-
-  &:hover
-    .btn
-      opacity: 1
 
 .btn-toolbar
   margin-top: 0
@@ -102,6 +93,7 @@ form
   > .brick-item-childs
     > .brick-list
       padding-left: 0
+
 #page-content
   padding-bottom: 6em
   > .brick-list
@@ -183,15 +175,18 @@ form
   .modal-body
     max-height: none
 
-textarea.ckeditor
-  height: 263px
-  display: block !important
-  visibility: show !important
-  position: absolute
+  #display-styles
+    position: absolute
+    top: 7px
+    right: 15px
 
-.kuhsaft-text-brick
-  .controls
-    min-height: 271px
+.control-group.text
+  height: 310px
+
+  textarea
+    height: 263px
+    width: 98%
 
 @import nestable
 @import bootstrap-responsive
+@import bootstrap_modal

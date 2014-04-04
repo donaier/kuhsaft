@@ -172,6 +172,16 @@ Implement the `available_display_styles` on a brick model and return an array of
     %my-brick{ :class => brick.to_style_class}
       = brick.text # ... etc
 
+After setting up display styles in specific model add your translations
+for the UI dropdown. E.g. you've added display styles to the TextBrick model:
+
+```
+de:
+  text_brick:
+    display_styles:
+      style1: 'My Style 1'
+      style2: 'My Style 2'
+```
 
 ## Adding custom templates with placeholder bricks
 
@@ -183,12 +193,28 @@ de:
   your_partial: Your Partial
 ```
 
+## Invalidating placeholder bricks containing other models on model changes
+
+Include the TouchPlaceholders module if your model is used within a
+placeholder brick and define which templates it appears in:
+
+```ruby
+class Dummy < ActiveRecord::Base
+  include Kuhsaft::TouchPlaceholders
+  placeholder_templates 'some_template', 'some_other_template'
+end
+```
+
 ## Adding additional content languages
 
 If you want to translate your pages into another language, generate a new translation migration:
 
     # translate your pages into french
     rails g kuhsaft:translations:add fr
+Or
+
+    # translate your pages into swiss german
+    rails g kuhsaft:translations:add de-CH
 
 This creates a new migration file inside `db/migrate` of your app. Run the migration as you normally do:
 
@@ -197,6 +223,9 @@ This creates a new migration file inside `db/migrate` of your app. Run the migra
 Finally, add the new translation locale to your `available_locales` inside your apps `application.rb`:
 
     config.available_locales = [:en, :fr]
+Or
+
+    config.available_locales = [:en, 'de-CH']
 
 ## Adding a language switch
 
@@ -359,6 +388,24 @@ to your rails app. The following partials are overridable.
 When using PostgreSQL, an additional attribute `excerpt` will be
 available on the page model. It includes a highlighted excerpt of the
 matching `fulltext` column.
+
+## Selecting CMS pages in CKEditor (API)
+
+The pages API is available under `/:locale/api/pages.json`. Only the
+title and url attribute is rendered in the json.
+
+### Usage
+Add the following lines to your `ck-config.js` file. The first line
+disables the standard link plugin. The second line enables the adv_link
+plugin, which we need for the CMS Page link dialogue in CKEditor.
+
+```
+config.removePlugins = 'link'
+config.extraPlugins = 'adv_link'
+```
+
+Do not forget to update your `config.assets.precompile` array. Add the
+following to your existing array `ckeditor/adv_link/*`.
 
 # LICENSE
 
