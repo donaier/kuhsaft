@@ -1,7 +1,6 @@
 module Kuhsaft
   require 'kuhsaft/engine'
   require 'kuhsaft/orderable'
-  require 'kuhsaft/image_uploader_mounting'
   require 'kuhsaft/translatable'
   require 'kuhsaft/searchable'
   require 'kuhsaft/gridded'
@@ -9,7 +8,6 @@ module Kuhsaft
   require 'kuhsaft/partial_extractor'
   require 'kuhsaft/touch_placeholders'
   require 'simple_form'
-  require 'carrierwave'
   require 'rdiscount'
   require 'bourbon'
   require 'jquery-rails'
