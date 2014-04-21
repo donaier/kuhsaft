@@ -1,9 +1,12 @@
 module Kuhsaft
   class ImageBrick < Brick
-    include Kuhsaft::ImageUploaderMounting
 
-    validates :image,
-              :image_size, presence: true
+    has_attached_file :image,
+      styles: { big: '120x100>', thumb: '120x100>' },
+      :path => ":rails_root/public/system/:class/:attachment/:id/:style/:filename",
+      :url => "/system/:class/:attachment/:id/:style/:filename"
+
+    validates :image, :presence => true
 
     def collect_fulltext
       [super, caption].join(' ')
